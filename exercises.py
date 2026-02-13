@@ -10,12 +10,45 @@ class Game:
         }
 
     def play_game(self):
-        print("Welcome to Tic-Tac-Toe!")
+        print("Shall we play a game?")
 
-        while not self.winner and not self.tie:
+        while True:  # outer loop for replay feature
+            while not self.winner and not self.tie:
+                self.render()
+                self.get_move()
+                self.check_winner()
+                self.check_tie()
+
+                if not self.winner and not self.tie:
+                    self.switch_turn()
+
+            # Final board state
             self.render()
-            self.get_move()
-            break  # temporary test
+
+            # Update score
+            if self.winner == 'X':
+                self.x_wins += 1
+            elif self.winner == 'O':
+                self.o_wins += 1
+            elif self.tie:
+                self.ties += 1
+
+            # Show scoreboard
+            print("\nScoreboard:")
+            print(f"X Wins: {self.x_wins}")
+            print(f"O Wins: {self.o_wins}")
+            print(f"Ties: {self.ties}")
+
+            # Ask to play again
+            again = input("\nWould you like to play again? (y/n): ").lower()
+
+            if again != 'y':
+                print("Thanks for playing!")
+                break
+
+            self.reset_game()
+
+
 
     def get_move(self):
         while True:
@@ -57,18 +90,24 @@ class Game:
     def check_tie(self):
         if not self.winner and all(self.board[position] is not None for position in self.board):
             self.tie = True
+    def switch_turn(self):
+        if self.turn == 'X':
+            self.turn = 'O'
+        else:
+            self.turn = 'X'
 
 
     def print_board(self):
         b = self.board
-        print(f"""
-      A   B   C
-1)  {b['a1'] or ' '} | {b['b1'] or ' '} | {b['c1'] or ' '}
-    ----------
-2)  {b['a2'] or ' '} | {b['b2'] or ' '} | {b['c2'] or ' '}
-    ----------
-3)  {b['a3'] or ' '} | {b['b3'] or ' '} | {b['c3'] or ' '}
-""")
+        print()
+        print("    A   B   C")
+        print(f"1)  {b['a1'] or ' '} | {b['b1'] or ' '} | {b['c1'] or ' '}")
+        print("   ----------")
+        print(f"2)  {b['a2'] or ' '} | {b['b2'] or ' '} | {b['c2'] or ' '}")
+        print("   ----------")
+        print(f"3)  {b['a3'] or ' '} | {b['b3'] or ' '} | {b['c3'] or ' '}")
+        print()
+
 
     def print_message(self):
         if self.tie:
@@ -81,6 +120,28 @@ class Game:
     def render(self):
         self.print_board()
         self.print_message()
+    def __init__(self):
+        self.turn = 'X'
+        self.tie = False
+        self.winner = None
+
+        self.x_wins = 0
+        self.o_wins = 0
+        self.ties = 0
+
+        self.board = {
+            'a1': None, 'b1': None, 'c1': None,
+            'a2': None, 'b2': None, 'c2': None,
+            'a3': None, 'b3': None, 'c3': None,
+            }
+    def reset_game(self):
+        self.turn = 'X'
+        self.tie = False
+        self.winner = None
+
+        for position in self.board:
+            self.board[position] = None
+
 
 
 game_instance = Game()
